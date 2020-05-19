@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using backend.Data;
 using backend.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,13 @@ namespace backend.Controllers
     [ApiController, Route("api/users")]
     public class UsersController : Controller
     {
+        private readonly IUsersRepo _usersRepo;
+
+        public UsersController(IUsersRepo usersRepo)
+        {
+            _usersRepo = usersRepo;
+        }
+
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
