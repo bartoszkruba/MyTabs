@@ -10,5 +10,6 @@ namespace backend.Data
         User GetUserById();
         User GetUserByEmailOrUsername(string email, string username);
         void CreateUser(User user);
+        void UpdateUser(User user);
     }
 }

@@ -29,5 +29,10 @@ namespace backend.Data
         {
             throw new System.NotImplementedException(nameof(CreateUser));
         }
+
+        public void UpdateUser(User user)
+        {
+            throw new System.NotImplementedException(nameof(UpdateUser));
+        }
     }
 }

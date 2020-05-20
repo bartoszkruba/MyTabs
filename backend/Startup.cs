@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using backend.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace backend
 {
@@ -30,8 +32,14 @@ namespace backend
             services.AddDbContext<MyTabsContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("MyTabsConnection")));
 
-            services.AddControllers();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.AddControllers()
+                .AddNewtonsoftJson(s =>
+                {
+                    s.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
+            
             services.AddScoped<IUsersRepo, SqlUsersRepo>();
         }
 
