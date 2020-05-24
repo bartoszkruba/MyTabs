@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace MyTabs.API.Dtos
@@ -21,6 +22,24 @@ namespace MyTabs.API.Dtos
         {
             Username = username;
             Password = password;
+        }
+
+        protected bool Equals(UserUpdateDto other)
+        {
+            return Username == other.Username && Password == other.Password;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((UserUpdateDto) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Username, Password);
         }
     }
 }

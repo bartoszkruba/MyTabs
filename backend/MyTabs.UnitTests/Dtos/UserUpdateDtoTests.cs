@@ -28,8 +28,8 @@ namespace MyTabs.UnitTests.Dtos
             Assert.False(userOne.Equals(userTwo));
             Assert.False(userTwo.Equals(userOne));
 
-            Assert.True(userOne.Equals(userThree));
-            Assert.True(userThree.Equals(userOne));
+            Assert.False(userOne.Equals(userThree));
+            Assert.False(userThree.Equals(userOne));
         }
     }
 }

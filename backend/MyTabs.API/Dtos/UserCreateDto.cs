@@ -28,5 +28,23 @@ namespace MyTabs.API.Dto
             Email = email;
             Password = password;
         }
+
+        protected bool Equals(UserCreateDto other)
+        {
+            return Username == other.Username && Email == other.Email && Password == other.Password;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((UserCreateDto) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Username, Email, Password);
+        }
     }
 }
