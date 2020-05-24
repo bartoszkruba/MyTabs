@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using MyTabs.API.Data;
 using MyTabs.API.Model;
@@ -10,28 +12,44 @@ namespace MyTabs.UnitTests.Repositories
     {
         private readonly SqlUsersRepo _sqlUsersRepo;
         private readonly Mock<MyTabsContext> _mockContext;
+        private readonly Mock<DbSet<User>> _mockSet;
+
+        private const int IdOne = 1;
+        private const string UsernameOne = "test1234";
+        private const string EmailOne = "test@email.com";
+        private const string PasswordOne = "test1234";
+        private readonly User _userOne = new User(IdOne, UsernameOne, EmailOne, PasswordOne);
 
         public SqlUserRepoTests()
         {
+            var data = new List<User> {_userOne}.AsQueryable();
+            _mockSet = new Mock<DbSet<User>>();
+            _mockSet.As<IQueryable<User>>().Setup(m => m.Provider).Returns(data.Provider);
+            _mockSet.As<IQueryable<User>>().Setup(m => m.Expression).Returns(data.Expression);
+            _mockSet.As<IQueryable<User>>().Setup(m => m.ElementType).Returns(data.ElementType);
+            _mockSet.As<IQueryable<User>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator);
+
             _mockContext = new Mock<MyTabsContext>();
+            _mockContext.Setup(c => c.Users).Returns(_mockSet.Object);
+
             _sqlUsersRepo = new SqlUsersRepo(_mockContext.Object);
         }
 
         [Fact]
         public void Test_GetUserById()
         {
-            const int id = 1;
-            const string username = "test1234";
-            const string email = "test@email.com";
-            const string password = "test1234";
-            var user = new User(id, username, email, password);
+            var returnedUser = _sqlUsersRepo.GetUserById(IdOne);
 
-            _mockContext.Setup(x => x.Users.FirstOrDefault(u => u.Id == id)).Returns(user);
+            _mockContext.Verify(x => x.Users, Times.Once());
+            Assert.Equal(returnedUser, _userOne);
+        }
 
-            var returnedUser = _sqlUsersRepo.GetUserById(id);
-
-            Assert.Equal(returnedUser, user);
-            _mockContext.Verify(x => x.Users.FirstOrDefault(u => u.Id == id), Times.Once());
+        [Fact]
+        public void Test_GetUserById_No_Match()
+        {
+            var returnedUser = _sqlUsersRepo.GetUserById(1231214);
+            _mockContext.Verify(x => x.Users, Times.Once());
+            Assert.Null(returnedUser);
         }
     }
 }

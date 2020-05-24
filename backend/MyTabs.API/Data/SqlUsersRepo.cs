@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using MyTabs.API.Model;
 
 namespace MyTabs.API.Data
@@ -22,10 +23,7 @@ namespace MyTabs.API.Data
             throw new System.NotImplementedException(nameof(GetAllUsers));
         }
 
-        public User GetUserById(int id)
-        {
-            throw new System.NotImplementedException(nameof(GetUserById));
-        }
+        public User GetUserById(int id) => _context.Users.FirstOrDefault(u => u.Id == id);
 
         public User GetUserByEmailOrUsername(string email, string username)
         {

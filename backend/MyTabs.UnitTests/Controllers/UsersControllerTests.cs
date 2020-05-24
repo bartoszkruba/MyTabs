@@ -36,7 +36,7 @@ namespace MyTabs.UnitTests.Controllers
             _mockMapper.Setup(x => x.Map<UserReadDto>(user)).Returns(userReadDto);
 
             // actions
-            var returnedUser = _usersController.GetUserById(id);
+            var returnedUser = _usersController.GetUserById(id).Value;
 
             // asserts
             Assert.Equal(returnedUser, userReadDto);
