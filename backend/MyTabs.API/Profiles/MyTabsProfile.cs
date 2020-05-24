@@ -1,5 +1,6 @@
 using AutoMapper;
 using MyTabs.API.Dto;
+using MyTabs.API.Dtos;
 using MyTabs.API.Model;
 
 namespace MyTabs.API.Profiles

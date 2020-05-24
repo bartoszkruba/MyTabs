@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MyTabs.API.Data;
 using MyTabs.API.Dto;
+using MyTabs.API.Dtos;
 
 namespace MyTabs.API.Controllers
 {

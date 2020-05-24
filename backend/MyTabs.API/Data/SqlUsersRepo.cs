@@ -5,6 +5,13 @@ namespace MyTabs.API.Data
 {
     public class SqlUsersRepo : IUsersRepo
     {
+        private readonly MyTabsContext _context;
+
+        public SqlUsersRepo(MyTabsContext context)
+        {
+            _context = context;
+        }
+
         public bool SaveChanges()
         {
             throw new System.NotImplementedException(nameof(SaveChanges));

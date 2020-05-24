@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MyTabs.API.Dto
+namespace MyTabs.API.Dtos
 {
     public class UserUpdateDto
     {
@@ -12,5 +12,15 @@ namespace MyTabs.API.Dto
         [Required
         ]
         public string Password { get; set; }
+
+        public UserUpdateDto()
+        {
+        }
+
+        public UserUpdateDto(string username, string password)
+        {
+            Username = username;
+            Password = password;
+        }
     }
 }

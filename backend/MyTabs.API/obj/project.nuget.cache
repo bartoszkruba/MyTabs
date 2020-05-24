@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "/UqJvrz11JR/rZaWoD4j3XWtdrNnyiwFX7rnUeuilDzCWYsg6XUNUXPc6OTXA9O2UEEr980TX5zzQZJIn0DtOQ==",
+  "dgSpecHash": "YYJyihI1DKSWvg8JiFzpSNXT7n588jlgFPZsl1+mgfqiJc1GS1k+1Iy5z8yxking3cPQXGvUzRXa58p4KZw4cg==",
   "success": true,
   "projectFilePath": "/home/bartoszkruba/Desktop/git/MyTabs/backend/MyTabs.API/MyTabs.API.csproj",
   "expectedPackageFiles": [
@@ -136,7 +136,8 @@
     "/home/bartoszkruba/.nuget/packages/system.xml.readerwriter/4.3.0/system.xml.readerwriter.4.3.0.nupkg.sha512",
     "/home/bartoszkruba/.nuget/packages/system.xml.xdocument/4.3.0/system.xml.xdocument.4.3.0.nupkg.sha512",
     "/home/bartoszkruba/.nuget/packages/system.xml.xmldocument/4.3.0/system.xml.xmldocument.4.3.0.nupkg.sha512",
-    "/home/bartoszkruba/.nuget/packages/system.xml.xmlserializer/4.3.0/system.xml.xmlserializer.4.3.0.nupkg.sha512"
+    "/home/bartoszkruba/.nuget/packages/system.xml.xmlserializer/4.3.0/system.xml.xmlserializer.4.3.0.nupkg.sha512",
+    "/home/bartoszkruba/.nuget/packages/microsoft.aspnetcore.app.ref/3.1.2/microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
   ],
   "logs": []
 }

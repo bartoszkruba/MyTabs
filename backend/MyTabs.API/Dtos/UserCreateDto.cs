@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace MyTabs.API.Dto
@@ -16,5 +17,16 @@ namespace MyTabs.API.Dto
         [Required
         ]
         public string Password { get; set; }
+
+        public UserCreateDto()
+        {
+        }
+
+        public UserCreateDto(string username, string email, string password)
+        {
+            Username = username;
+            Email = email;
+            Password = password;
+        }
     }
 }
