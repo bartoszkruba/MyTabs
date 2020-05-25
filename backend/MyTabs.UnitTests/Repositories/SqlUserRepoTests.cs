@@ -58,9 +58,12 @@ namespace MyTabs.UnitTests.Repositories
         }
 
         [Fact]
-        public void Test_GetUserById_No_Match()
+        public void Test_GetUserById_NoMatch()
         {
+            // actions
             var returnedUser = _sqlUsersRepo.GetUserById(1231214);
+
+            // asserts
             _mockContext.Verify(x => x.Users, Times.Once());
             Assert.Null(returnedUser);
         }
@@ -78,6 +81,63 @@ namespace MyTabs.UnitTests.Repositories
             Assert.Contains(_userTwo, enumerable);
             Assert.Contains(_userThree, enumerable);
             _mockContext.Verify(x => x.Users, Times.Once());
+        }
+
+        [Fact]
+        public void Test_SaveChanges()
+        {
+            // actions 
+            _sqlUsersRepo.SaveChanges();
+
+            // asserts
+            _mockContext.Verify(x => x.SaveChanges(), Times.Once());
+        }
+
+        [Fact]
+        public void Test_GetUserByEmailOrUsername_BothArgumentMatches()
+        {
+            // actions
+            var user = _sqlUsersRepo.GetUserByEmailOrUsername(EmailOne, UsernameOne);
+
+            // asserts
+            Assert.Equal(_userOne, user);
+            _mockContext.Verify(x => x.Users, Times.Once());
+        }
+
+        [Fact]
+        public void Test_GetUserByEmailOrUsername_OneArgumentMatches()
+        {
+            // actions
+            var responseOne = _sqlUsersRepo.GetUserByEmailOrUsername(EmailTwo, "sdsdasdsadas");
+            var responseTwo = _sqlUsersRepo.GetUserByEmailOrUsername("sddssdasad", UsernameTwo);
+
+            // asserts
+            Assert.Equal(_userTwo, responseOne);
+            Assert.Equal(responseOne, responseTwo);
+            _mockContext.Verify(x => x.Users, Times.Exactly(2));
+        }
+
+        [Fact]
+        public void Test_GetUserByEmailOrUsername_NoArgumentMatches()
+        {
+            // actions
+            var user = _sqlUsersRepo.GetUserByEmailOrUsername("sasdssda", "sdsadas");
+
+            // asserts
+            Assert.Null(user);
+            _mockContext.Verify(x => x.Users, Times.Once());
+        }
+
+        [Fact]
+        public void Test_GetUserByEmailOrUsername_NullArguments()
+        {
+            // asserts
+            Assert.Throws<ArgumentNullException>(() =>
+                _sqlUsersRepo.GetUserByEmailOrUsername(null, UsernameThree));
+            Assert.Throws<ArgumentNullException>(() =>
+                _sqlUsersRepo.GetUserByEmailOrUsername(EmailThree, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                _sqlUsersRepo.GetUserByEmailOrUsername(null, null));
         }
     }
 }

@@ -18,10 +18,7 @@ namespace MyTabs.API.Data
             throw new System.NotImplementedException(nameof(SaveChanges));
         }
 
-        public IEnumerable<User> GetAllUsers()
-        {
-            return _context.Users.ToList();
-        }
+        public IEnumerable<User> GetAllUsers() => _context.Users.ToList();
 
         public User GetUserById(int id) => _context.Users.FirstOrDefault(u => u.Id == id);
 
