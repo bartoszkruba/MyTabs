@@ -24,7 +24,10 @@ namespace MyTabs.API.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
-            throw new NotImplementedException(nameof(GetAllUsers));
+            var users = _usersRepo.GetAllUsers();
+
+            var userDtos = _mapper.Map<IEnumerable<UserReadDto>>(users);
+            return Ok(userDtos);
         }
 
         [HttpGet("{id}")]
