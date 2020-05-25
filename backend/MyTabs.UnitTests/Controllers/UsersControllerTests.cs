@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -15,11 +17,26 @@ namespace MyTabs.UnitTests.Controllers
         private readonly Mock<IUsersRepo> _mockUserRepo;
         private readonly Mock<IMapper> _mockMapper;
 
-        private const int Id = 1;
-        private const string Username = "test1234";
-        private const string Email = "test@email.com";
-        private const string Password = "test1234";
-        private readonly User _userOne = new User(Id, Username, Email, Password);
+        private const int IdOne = 1;
+        private const string UsernameOne = "test1234";
+        private const string EmailOne = "test@email.com";
+        private const string PasswordOne = "test1234";
+        private readonly User _userOne = new User(IdOne, UsernameOne, EmailOne, PasswordOne);
+        private readonly UserReadDto _userReadDtoOne = new UserReadDto(IdOne, UsernameOne);
+
+        private const int IdTwo = 2;
+        private const string UsernameTwo = "johndone";
+        private const string EmailTwo = "john.doe@email.com";
+        private const string PasswordTwo = "password1234";
+        private readonly User _userTwo = new User(IdTwo, UsernameTwo, EmailTwo, PasswordTwo);
+        private readonly UserReadDto _userReadDtoTwo = new UserReadDto(IdTwo, UsernameTwo);
+
+        private const int IdThree = 3;
+        private const string UsernameThree = "marydoe";
+        private const string EmailThree = "mary.doe@email.com";
+        private const string PasswordThree = "marydoe132";
+        private readonly User _userThree = new User(IdThree, UsernameThree, EmailThree, PasswordThree);
+        private readonly UserReadDto _userReadDtoThree = new UserReadDto(IdThree, UsernameThree);
 
         public UsersControllerTests()
         {
@@ -31,19 +48,19 @@ namespace MyTabs.UnitTests.Controllers
         [Fact]
         public void Test_GetUserById()
         {
-            var userReadDto = new UserReadDto(Id, Username);
-
-            _mockUserRepo.Setup(x => x.GetUserById(Id)).Returns(_userOne);
+            // preparation
+            var userReadDto = new UserReadDto(IdOne, UsernameOne);
+            _mockUserRepo.Setup(x => x.GetUserById(IdOne)).Returns(_userOne);
             _mockMapper.Setup(x => x.Map<UserReadDto>(_userOne)).Returns(userReadDto);
 
             // actions
-            var response = _usersController.GetUserById(Id);
+            var response = _usersController.GetUserById(IdOne);
             var returnedUser = (response.Result as OkObjectResult)?.Value;
 
             // asserts
             Assert.Equal(200, ((OkObjectResult) response.Result).StatusCode);
             Assert.Equal(userReadDto, returnedUser);
-            _mockUserRepo.Verify(x => x.GetUserById(Id), Times.Once());
+            _mockUserRepo.Verify(x => x.GetUserById(IdOne), Times.Once());
             _mockUserRepo.VerifyNoOtherCalls();
             _mockMapper.Verify(x => x.Map<UserReadDto>(_userOne), Times.Once());
             _mockMapper.VerifyNoOtherCalls();
@@ -52,15 +69,47 @@ namespace MyTabs.UnitTests.Controllers
         [Fact]
         public void Test_GetUserById_NotFound()
         {
-            _mockUserRepo.Setup(x => x.GetUserById(Id)).Returns((User) null);
+            // preparation
+            _mockUserRepo.Setup(x => x.GetUserById(IdOne)).Returns((User) null);
 
-            var response = _usersController.GetUserById(Id);
+            // actions
+            var response = _usersController.GetUserById(IdOne);
+
+            // asserts
             Assert.Null(response.Value);
             Assert.Equal(404, ((StatusCodeResult) response.Result).StatusCode);
-
-            _mockUserRepo.Verify(x => x.GetUserById(Id), Times.Once());
+            _mockUserRepo.Verify(x => x.GetUserById(IdOne), Times.Once());
             _mockUserRepo.VerifyNoOtherCalls();
 
+            _mockMapper.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_GetAllUsers()
+        {
+            // preparation
+            var users = new List<User> {_userOne, _userTwo, _userThree};
+            var dtos = new List<UserReadDto> {_userReadDtoOne, _userReadDtoTwo, _userReadDtoThree};
+            _mockUserRepo.Setup(x => x.GetAllUsers()).Returns(users);
+            _mockMapper.Setup(x => x.Map<IEnumerable<UserReadDto>>(users)).Returns(dtos);
+
+            // actions
+            var response = _usersController.GetAllUsers();
+            var returnedUsers = (response.Result as OkObjectResult)?.Value as List<UserReadDto>;
+            var responseStatus = ((OkObjectResult) response.Result).StatusCode;
+
+            // asserts
+            Assert.Equal(200, responseStatus);
+            Assert.Equal(dtos, returnedUsers);
+            Assert.Equal(3, returnedUsers!.Count);
+            Assert.Contains(_userReadDtoOne, returnedUsers);
+            Assert.Contains(_userReadDtoTwo, returnedUsers);
+            Assert.Contains(_userReadDtoThree, returnedUsers);
+
+            _mockUserRepo.Verify(x => x.GetAllUsers());
+            _mockUserRepo.VerifyNoOtherCalls();
+
+            _mockMapper.Verify(x => x.Map<IEnumerable<UserReadDto>>(users));
             _mockMapper.VerifyNoOtherCalls();
         }
     }
