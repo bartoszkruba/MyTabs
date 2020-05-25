@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using MyTabs.API.Controllers;
 using MyTabs.API.Data;
@@ -14,6 +15,12 @@ namespace MyTabs.UnitTests.Controllers
         private readonly Mock<IUsersRepo> _mockUserRepo;
         private readonly Mock<IMapper> _mockMapper;
 
+        private const int Id = 1;
+        private const string Username = "test1234";
+        private const string Email = "test@email.com";
+        private const string Password = "test1234";
+        private readonly User _userOne = new User(Id, Username, Email, Password);
+
         public UsersControllerTests()
         {
             _mockUserRepo = new Mock<IUsersRepo>();
@@ -24,24 +31,37 @@ namespace MyTabs.UnitTests.Controllers
         [Fact]
         public void Test_GetUserById()
         {
-            // setup
-            const int id = 1;
-            const string username = "test1234";
-            const string email = "test@email.com";
-            const string password = "test1234";
-            var user = new User(id, username, email, password);
-            var userReadDto = new UserReadDto(id, username);
+            var userReadDto = new UserReadDto(Id, Username);
 
-            _mockUserRepo.Setup(x => x.GetUserById(id)).Returns(user);
-            _mockMapper.Setup(x => x.Map<UserReadDto>(user)).Returns(userReadDto);
+            _mockUserRepo.Setup(x => x.GetUserById(Id)).Returns(_userOne);
+            _mockMapper.Setup(x => x.Map<UserReadDto>(_userOne)).Returns(userReadDto);
 
             // actions
-            var returnedUser = _usersController.GetUserById(id).Value;
+            var response = _usersController.GetUserById(Id);
+            var returnedUser = response.Value;
 
             // asserts
+            Assert.Equal(200, ((StatusCodeResult) response.Result).StatusCode);
             Assert.Equal(returnedUser, userReadDto);
-            _mockUserRepo.Verify(x => x.GetUserById(id), Times.Once());
-            _mockMapper.Verify(x => x.Map<UserReadDto>(user), Times.Once());
+            _mockUserRepo.Verify(x => x.GetUserById(Id), Times.Once());
+            _mockUserRepo.VerifyNoOtherCalls();
+            _mockMapper.Verify(x => x.Map<UserReadDto>(_userOne), Times.Once());
+            _mockMapper.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_GetUserById_NotFound()
+        {
+            _mockUserRepo.Setup(x => x.GetUserById(Id)).Returns((User) null);
+
+            var response = _usersController.GetUserById(Id);
+            Assert.Null(response.Value);
+            Assert.Equal(404, ((StatusCodeResult) response.Result).StatusCode);
+
+            _mockUserRepo.Verify(x => x.GetUserById(Id), Times.Once());
+            _mockUserRepo.VerifyNoOtherCalls();
+
+            _mockMapper.VerifyNoOtherCalls();
         }
     }
 }
