@@ -30,7 +30,11 @@ namespace MyTabs.API.Controllers
         [HttpGet("{id}")]
         public ActionResult<UserReadDto> GetUserById(int id)
         {
-            throw new NotImplementedException(nameof(GetUserById));
+            var user = _usersRepo.GetUserById(id);
+            if (user == null) return NotFound();
+
+            var userReadDto = _mapper.Map<UserReadDto>(user);
+            return Ok(userReadDto);
         }
 
         [HttpPost]

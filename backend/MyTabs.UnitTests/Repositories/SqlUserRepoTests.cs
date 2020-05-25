@@ -42,7 +42,6 @@ namespace MyTabs.UnitTests.Repositories
             var returnedUser = _sqlUsersRepo.GetUserById(IdOne);
 
             _mockContext.Verify(x => x.Users, Times.Once());
-            _mockContext.VerifyNoOtherCalls();
             Assert.Equal(returnedUser, _userOne);
         }
 
@@ -51,7 +50,6 @@ namespace MyTabs.UnitTests.Repositories
         {
             var returnedUser = _sqlUsersRepo.GetUserById(1231214);
             _mockContext.Verify(x => x.Users, Times.Once());
-            _mockContext.VerifyNoOtherCalls();
             Assert.Null(returnedUser);
         }
     }

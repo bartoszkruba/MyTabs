@@ -38,11 +38,11 @@ namespace MyTabs.UnitTests.Controllers
 
             // actions
             var response = _usersController.GetUserById(Id);
-            var returnedUser = response.Value;
+            var returnedUser = (response.Result as OkObjectResult)?.Value;
 
             // asserts
-            Assert.Equal(200, ((StatusCodeResult) response.Result).StatusCode);
-            Assert.Equal(returnedUser, userReadDto);
+            Assert.Equal(200, ((OkObjectResult) response.Result).StatusCode);
+            Assert.Equal(userReadDto, returnedUser);
             _mockUserRepo.Verify(x => x.GetUserById(Id), Times.Once());
             _mockUserRepo.VerifyNoOtherCalls();
             _mockMapper.Verify(x => x.Map<UserReadDto>(_userOne), Times.Once());
