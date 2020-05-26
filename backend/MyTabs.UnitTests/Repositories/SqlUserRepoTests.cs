@@ -86,11 +86,31 @@ namespace MyTabs.UnitTests.Repositories
         [Fact]
         public void Test_SaveChanges()
         {
+            // preparations
+            _mockContext.Setup(x => x.SaveChanges()).Returns(1);
+
             // actions 
-            _sqlUsersRepo.SaveChanges();
+            var result = _sqlUsersRepo.SaveChanges();
 
             // asserts
+            Assert.True(result);
             _mockContext.Verify(x => x.SaveChanges(), Times.Once());
+            _mockSet.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_SaveChanges_WithError()
+        {
+            // preparations
+            _mockContext.Setup(x => x.SaveChanges()).Returns(-1);
+
+            // actions
+            var result = _sqlUsersRepo.SaveChanges();
+
+            // asserts
+            Assert.False(result);
+            _mockContext.Verify(x => x.SaveChanges(), Times.Once());
+            _mockSet.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -157,7 +177,7 @@ namespace MyTabs.UnitTests.Repositories
         {
             // asserts
             Assert.Throws<ArgumentNullException>(() => _sqlUsersRepo.CreateUser(null));
-            _mockContext.Verify(x => x.Users, Times.Once());
+            _mockContext.Verify(x => x.Users, Times.Never());
         }
 
         [Fact]

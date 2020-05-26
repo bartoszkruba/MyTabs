@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using MyTabs.API.Model;
@@ -13,10 +14,7 @@ namespace MyTabs.API.Data
             _context = context;
         }
 
-        public bool SaveChanges()
-        {
-            throw new System.NotImplementedException(nameof(SaveChanges));
-        }
+        public bool SaveChanges() => _context.SaveChanges() >= 0;
 
         public IEnumerable<User> GetAllUsers() => _context.Users.ToList();
 
@@ -24,17 +22,21 @@ namespace MyTabs.API.Data
 
         public User GetUserByEmailOrUsername(string email, string username)
         {
-            throw new System.NotImplementedException(nameof(GetUserByEmailOrUsername));
+            if (email == null) throw new ArgumentNullException(nameof(email));
+            if (username == null) throw new ArgumentNullException(nameof(username));
+
+            return _context.Users.FirstOrDefault(u => u.Email == email || u.Username == username);
         }
 
         public void CreateUser(User user)
         {
-            throw new System.NotImplementedException(nameof(CreateUser));
+            if (user == null) throw new ArgumentNullException(nameof(user));
+            _context.Users.Add(user);
         }
 
         public void UpdateUser(User user)
         {
-            throw new System.NotImplementedException(nameof(UpdateUser));
+            if (user == null) throw new ArgumentNullException(nameof(user));
         }
     }
 }
