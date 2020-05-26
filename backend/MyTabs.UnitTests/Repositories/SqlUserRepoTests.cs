@@ -139,5 +139,45 @@ namespace MyTabs.UnitTests.Repositories
             Assert.Throws<ArgumentNullException>(() =>
                 _sqlUsersRepo.GetUserByEmailOrUsername(null, null));
         }
+
+        [Fact]
+        public void Test_CreateUser()
+        {
+            // actions
+            _sqlUsersRepo.CreateUser(_userOne);
+
+            // asserts
+            _mockContext.Verify(x => x.Users, Times.Once());
+            _mockSet.Verify(x => x.Add(_userOne), Times.Once());
+            _mockSet.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_CreateUser_NullArgument()
+        {
+            // asserts
+            Assert.Throws<ArgumentNullException>(() => _sqlUsersRepo.CreateUser(null));
+            _mockContext.Verify(x => x.Users, Times.Once());
+        }
+
+        [Fact]
+        public void Test_UpdateUser()
+        {
+            // actions
+            _sqlUsersRepo.UpdateUser(_userOne);
+
+            // asserts
+            _mockContext.Verify(x => x.Users, Times.Never());
+            _mockSet.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_UpdateUser_Null_Argument()
+        {
+            // asserts
+            Assert.Throws<ArgumentNullException>(() => _sqlUsersRepo.UpdateUser(null));
+            _mockContext.Verify(x => x.Users, Times.Never());
+            _mockSet.VerifyNoOtherCalls();
+        }
     }
 }
