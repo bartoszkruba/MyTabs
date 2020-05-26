@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyTabs.API.Data;
 using MyTabs.API.Dto;
 using MyTabs.API.Dtos;
+using MyTabs.API.Model;
 
 namespace MyTabs.API.Controllers
 {
@@ -30,7 +31,7 @@ namespace MyTabs.API.Controllers
             return Ok(userDtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUserById")]
         public ActionResult<UserReadDto> GetUserById(int id)
         {
             var user = _usersRepo.GetUserById(id);
@@ -43,7 +44,20 @@ namespace MyTabs.API.Controllers
         [HttpPost]
         public ActionResult<UserReadDto> CreateNewUser(UserCreateDto userCreateDto)
         {
-            throw new NotImplementedException(nameof(CreateNewUser));
+            if (_usersRepo.GetUserByEmailOrUsername(userCreateDto.Email, userCreateDto.Username) != null)
+            {
+                var response = new Dictionary<string, string>
+                {
+                    ["Status"] = "400", ["Error"] = "Username or email is already taken."
+                };
+                return BadRequest(response);
+            }
+
+            var user = _mapper.Map<User>(userCreateDto);
+            _usersRepo.CreateUser(user);
+            _usersRepo.SaveChanges();
+
+            return CreatedAtRoute(nameof(GetUserById), new {user.Id}, _mapper.Map<UserReadDto>(user));
         }
 
         [HttpPut("{id}")]

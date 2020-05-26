@@ -124,15 +124,19 @@ namespace MyTabs.UnitTests.Controllers
 
             // actions
             var response = _usersController.CreateNewUser(_userCreateDtoOne);
-            var returnedUser = (response.Result as CreatedAtActionResult)?.Value as UserReadDto;
-            var responseStatus = (response.Result as CreatedAtActionResult)?.StatusCode;
+            var returnedUser = (response.Result as CreatedAtRouteResult)?.Value as UserReadDto;
+            var responseStatus = (response.Result as CreatedAtRouteResult)?.StatusCode;
+            var routeName = (response.Result as CreatedAtRouteResult)?.RouteName;
+            var routeId = (response.Result as CreatedAtRouteResult)?.RouteValues["Id"];
 
             // asserts
             Assert.Equal(_userReadDtoOne, returnedUser);
             Assert.Equal(201, responseStatus);
+            Assert.Equal(nameof(UsersController.GetUserById), routeName);
+            Assert.Equal(IdOne, routeId);
 
             _mockUserRepo.Verify(x => x.GetUserByEmailOrUsername(EmailOne, UsernameOne), Times.Once());
-            _mockMapper.Verify(x => x.Map<User>(_userReadDtoOne), Times.Once());
+            _mockMapper.Verify(x => x.Map<User>(_userCreateDtoOne), Times.Once());
             _mockUserRepo.Verify(x => x.CreateUser(_userOne), Times.Once());
             _mockUserRepo.Verify(x => x.SaveChanges());
             _mockMapper.Verify(x => x.Map<UserReadDto>(_userOne), Times.Once());
@@ -148,12 +152,12 @@ namespace MyTabs.UnitTests.Controllers
 
             // actions
             var response = _usersController.CreateNewUser(_userCreateDtoOne);
-            var returnedBody = (response.Result as NotFoundObjectResult)?.Value as Dictionary<string, string>;
-            var responseStatus = (response.Result as NotFoundObjectResult)?.StatusCode;
+            var returnedBody = (response.Result as BadRequestObjectResult)?.Value as Dictionary<string, string>;
+            var responseStatus = (response.Result as BadRequestObjectResult)?.StatusCode;
 
             // asserts
             Assert.Equal("400", returnedBody?["Status"]);
-            Assert.Equal("Username or email is already taken", returnedBody?["Error"]);
+            Assert.Equal("Username or email is already taken.", returnedBody?["Error"]);
             Assert.Equal(400, responseStatus);
 
             _mockUserRepo.Verify(x => x.GetUserByEmailOrUsername(EmailOne, UsernameOne));
