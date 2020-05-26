@@ -22,6 +22,7 @@ namespace MyTabs.UnitTests.Controllers
         private const string PasswordOne = "test1234";
         private readonly User _userOne = new User(IdOne, UsernameOne, EmailOne, PasswordOne);
         private readonly UserReadDto _userReadDtoOne = new UserReadDto(IdOne, UsernameOne);
+        private readonly UserCreateDto _userCreateDtoOne = new UserCreateDto(UsernameOne, EmailOne, PasswordOne);
 
         private const int IdTwo = 2;
         private const string UsernameTwo = "johndone";
@@ -109,6 +110,54 @@ namespace MyTabs.UnitTests.Controllers
             _mockUserRepo.VerifyNoOtherCalls();
 
             _mockMapper.Verify(x => x.Map<IEnumerable<UserReadDto>>(users));
+            _mockMapper.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_CreateNewUser()
+        {
+            // preparations
+            _mockUserRepo.Setup(x => x.GetUserByEmailOrUsername(EmailOne, UsernameOne))
+                .Returns((User) null);
+            _mockMapper.Setup(x => x.Map<User>(_userCreateDtoOne)).Returns(_userOne);
+            _mockMapper.Setup(x => x.Map<UserReadDto>(_userOne)).Returns(_userReadDtoOne);
+
+            // actions
+            var response = _usersController.CreateNewUser(_userCreateDtoOne);
+            var returnedUser = (response.Result as CreatedAtActionResult)?.Value as UserReadDto;
+            var responseStatus = (response.Result as CreatedAtActionResult)?.StatusCode;
+
+            // asserts
+            Assert.Equal(_userReadDtoOne, returnedUser);
+            Assert.Equal(201, responseStatus);
+
+            _mockUserRepo.Verify(x => x.GetUserByEmailOrUsername(EmailOne, UsernameOne), Times.Once());
+            _mockMapper.Verify(x => x.Map<User>(_userReadDtoOne), Times.Once());
+            _mockUserRepo.Verify(x => x.CreateUser(_userOne), Times.Once());
+            _mockUserRepo.Verify(x => x.SaveChanges());
+            _mockMapper.Verify(x => x.Map<UserReadDto>(_userOne), Times.Once());
+            _mockUserRepo.VerifyNoOtherCalls();
+            _mockMapper.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void Test_CreateNewUser_UsernameOrEmailAlreadyExist()
+        {
+            // preparations
+            _mockUserRepo.Setup(x => x.GetUserByEmailOrUsername(EmailOne, UsernameOne)).Returns(_userOne);
+
+            // actions
+            var response = _usersController.CreateNewUser(_userCreateDtoOne);
+            var returnedBody = (response.Result as NotFoundObjectResult)?.Value as Dictionary<string, string>;
+            var responseStatus = (response.Result as NotFoundObjectResult)?.StatusCode;
+
+            // asserts
+            Assert.Equal("400", returnedBody?["Status"]);
+            Assert.Equal("Username or email is already taken", returnedBody?["Error"]);
+            Assert.Equal(400, responseStatus);
+
+            _mockUserRepo.Verify(x => x.GetUserByEmailOrUsername(EmailOne, UsernameOne));
+            _mockUserRepo.VerifyNoOtherCalls();
             _mockMapper.VerifyNoOtherCalls();
         }
     }
