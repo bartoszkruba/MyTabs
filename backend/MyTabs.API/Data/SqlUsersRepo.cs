@@ -28,6 +28,11 @@ namespace MyTabs.API.Data
             return _context.Users.FirstOrDefault(u => u.Email == email || u.Username == username);
         }
 
+        public User GetUserByUsername(string username)
+        {
+            throw new NotImplementedException(nameof(GetUserByUsername));
+        }
+
         public void CreateUser(User user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));

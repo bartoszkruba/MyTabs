@@ -161,6 +161,43 @@ namespace MyTabs.UnitTests.Repositories
         }
 
         [Fact]
+        public void Test_GetUserByUsername()
+        {
+            // actions
+            var user = _sqlUsersRepo.GetUserByUsername(UsernameOne);
+
+            // asserts
+            Assert.Equal(_userOne, user);
+
+            _mockContext.Verify(x => x.Users, Times.Once());
+            _mockSet.Setup(x => x.FirstOrDefault(u => u.Username == UsernameOne));
+        }
+
+        [Fact]
+        public void Test_GetUserByUsername_NoMatch()
+        {
+            const string username = "dsadsdsdsadsadas";
+
+            // actions
+            var user = _sqlUsersRepo.GetUserByUsername(username);
+
+            // asserts
+            Assert.Null(user);
+
+            _mockContext.Verify(x => x.Users, Times.Once());
+            _mockSet.Verify(x => x.FirstOrDefault(u => u.Username == username), Times.Once());
+        }
+
+        [Fact]
+        public void Test_GetUserByUsername_NullArgument()
+        {
+            // asserts
+            Assert.Throws<ArgumentNullException>(() => _sqlUsersRepo.GetUserByUsername(null));
+            _mockContext.Verify(x => x.Users, Times.Never());
+            _mockSet.Verify(x => x.FirstOrDefault(u => u.Username == null), Times.Never());
+        }
+
+        [Fact]
         public void Test_CreateUser()
         {
             // actions

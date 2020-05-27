@@ -61,7 +61,7 @@ namespace MyTabs.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<UserReadDto> UpdateUser(int id, UserCreateDto userCreateDto)
+        public ActionResult<UserReadDto> UpdateUser(int id, UserUpdateDto userUpdateDto)
         {
             throw new NotImplementedException(nameof(UpdateUser));
         }
