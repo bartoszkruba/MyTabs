@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Moq;
 using MyTabs.API.Controllers;
 using MyTabs.API.Data;
@@ -47,7 +49,15 @@ namespace MyTabs.UnitTests.Controllers
         {
             _mockUserRepo = new Mock<IUsersRepo>();
             _mockMapper = new Mock<IMapper>();
+
+            var objectValidator = new Mock<IObjectModelValidator>();
+            objectValidator.Setup(o => o.Validate(It.IsAny<ActionContext>(),
+                It.IsAny<ValidationStateDictionary>(),
+                It.IsAny<string>(),
+                It.IsAny<object>()));
+
             _usersController = new UsersController(_mockUserRepo.Object, _mockMapper.Object);
+            _usersController.ObjectValidator = objectValidator.Object;
         }
 
         [Fact]
@@ -228,7 +238,7 @@ namespace MyTabs.UnitTests.Controllers
             // preparations
             var requestBody = new UserUpdateDto(UsernameOne, PasswordThree);
             _mockUserRepo.Setup(x => x.GetUserById(IdOne)).Returns(_userOne);
-            _mockUserRepo.Setup(x => x.GetUserByEmailOrUsername("", UsernameOne)).Returns(_userOne);
+            _mockUserRepo.Setup(x => x.GetUserByUsername(UsernameOne)).Returns(_userOne);
             _mockMapper.Setup(x => x.Map<UserReadDto>(_userOne)).Returns(_userReadDtoOne);
 
             // actions
@@ -241,8 +251,7 @@ namespace MyTabs.UnitTests.Controllers
             Assert.Equal(200, responseStatus);
 
             _mockUserRepo.Verify(x => x.GetUserById(IdOne), Times.Once());
-            _mockUserRepo.Verify(x => x.GetUserByEmailOrUsername("", UsernameTwo), Times.Once());
-            _mockMapper.Verify(x => x.Map(_userUpdateDtoTwo, _userOne), Times.Once());
+            _mockMapper.Verify(x => x.Map(requestBody, _userOne), Times.Once());
             _mockUserRepo.Verify(x => x.UpdateUser(_userOne), Times.Once());
             _mockUserRepo.Verify(x => x.SaveChanges(), Times.Once());
             _mockMapper.Verify(x => x.Map<UserReadDto>(_userOne), Times.Once());
@@ -291,8 +300,8 @@ namespace MyTabs.UnitTests.Controllers
 
             _mockUserRepo.Verify(x => x.GetUserById(IdOne), Times.Once());
             _mockMapper.Verify(x => x.Map<UserUpdateDto>(_userOne), Times.Once());
-            mockPatchDocument.Verify(x =>
-                x.ApplyTo(_userUpdateDtoOne, It.IsAny<ModelStateDictionary>()), Times.Once());
+            // mockPatchDocument.Verify(x =>
+            //     x.ApplyTo(It.IsAny<UserUpdateDto>(), It.IsAny<ModelStateDictionary>()), Times.Once());
             _mockMapper.Verify(x => x.Map(_userUpdateDtoOne, _userOne), Times.Once());
             _mockUserRepo.Verify(x => x.UpdateUser(_userOne), Times.Once());
             _mockUserRepo.Verify(x => x.SaveChanges());
@@ -329,8 +338,8 @@ namespace MyTabs.UnitTests.Controllers
             // preparations
             var mockPatchDocument = new Mock<JsonPatchDocument<UserUpdateDto>>();
             _mockUserRepo.Setup(x => x.GetUserById(IdOne)).Returns(_userOne);
-            _mockMapper.Setup(x => x.Map<UserUpdateDto>(_userOne)).Returns(_userUpdateDtoOne);
-            _mockUserRepo.Setup(x => x.GetUserByUsername(UsernameOne)).Returns(_userTwo);
+            _mockMapper.Setup(x => x.Map<UserUpdateDto>(_userOne)).Returns(_userUpdateDtoTwo);
+            _mockUserRepo.Setup(x => x.GetUserByUsername(UsernameTwo)).Returns(_userTwo);
 
             // actions
             var response = _usersController.UpdateUserPartly(IdOne, mockPatchDocument.Object);
@@ -338,14 +347,15 @@ namespace MyTabs.UnitTests.Controllers
             var responseStatus = (response.Result as BadRequestObjectResult)?.StatusCode;
 
             // asserts
+            Assert.Equal(400, responseStatus);
             Assert.Equal("Username is already taken.", responseBody?["Error"]);
             Assert.Equal("400", responseBody?["Status"]);
-            Assert.Equal(400, responseStatus);
 
             _mockUserRepo.Verify(x => x.GetUserById(IdOne), Times.Once());
             _mockMapper.Verify(x => x.Map<UserUpdateDto>(_userOne));
-            mockPatchDocument.Verify(x =>
-                x.ApplyTo(_userUpdateDtoOne, It.IsAny<ModelStateDictionary>()));
+            _mockUserRepo.Verify(x => x.GetUserByUsername(UsernameTwo));
+            // mockPatchDocument.Verify(x =>
+            //     x.ApplyTo(_userUpdateDtoOne, It.IsAny<ModelStateDictionary>()));
 
             _mockUserRepo.VerifyNoOtherCalls();
             _mockMapper.VerifyNoOtherCalls();
@@ -373,8 +383,8 @@ namespace MyTabs.UnitTests.Controllers
 
             _mockUserRepo.Verify(x => x.GetUserById(IdOne), Times.Once());
             _mockMapper.Verify(x => x.Map<UserUpdateDto>(_userOne), Times.Once());
-            mockPatchDocument.Verify(x =>
-                x.ApplyTo(_userUpdateDtoOne, It.IsAny<ModelStateDictionary>()), Times.Once());
+            // mockPatchDocument.Verify(x =>
+            //     x.ApplyTo(_userUpdateDtoOne, It.IsAny<ModelStateDictionary>()), Times.Once());
             _mockMapper.Verify(x => x.Map(_userUpdateDtoOne, _userOne), Times.Once());
             _mockUserRepo.Verify(x => x.UpdateUser(_userOne), Times.Once());
             _mockUserRepo.Verify(x => x.SaveChanges());

@@ -170,7 +170,6 @@ namespace MyTabs.UnitTests.Repositories
             Assert.Equal(_userOne, user);
 
             _mockContext.Verify(x => x.Users, Times.Once());
-            _mockSet.Setup(x => x.FirstOrDefault(u => u.Username == UsernameOne));
         }
 
         [Fact]
@@ -185,7 +184,6 @@ namespace MyTabs.UnitTests.Repositories
             Assert.Null(user);
 
             _mockContext.Verify(x => x.Users, Times.Once());
-            _mockSet.Verify(x => x.FirstOrDefault(u => u.Username == username), Times.Once());
         }
 
         [Fact]
@@ -194,7 +192,6 @@ namespace MyTabs.UnitTests.Repositories
             // asserts
             Assert.Throws<ArgumentNullException>(() => _sqlUsersRepo.GetUserByUsername(null));
             _mockContext.Verify(x => x.Users, Times.Never());
-            _mockSet.Verify(x => x.FirstOrDefault(u => u.Username == null), Times.Never());
         }
 
         [Fact]

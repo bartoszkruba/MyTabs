@@ -30,7 +30,8 @@ namespace MyTabs.API.Data
 
         public User GetUserByUsername(string username)
         {
-            throw new NotImplementedException(nameof(GetUserByUsername));
+            if (username == null) throw new ArgumentNullException(nameof(username));
+            return _context.Users.FirstOrDefault(u => u.Username == username);
         }
 
         public void CreateUser(User user)

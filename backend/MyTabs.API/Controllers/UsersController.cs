@@ -63,13 +63,39 @@ namespace MyTabs.API.Controllers
         [HttpPut("{id}")]
         public ActionResult<UserReadDto> UpdateUser(int id, UserUpdateDto userUpdateDto)
         {
-            throw new NotImplementedException(nameof(UpdateUser));
+            var user = _usersRepo.GetUserById(id);
+            if (user == null) return NotFound();
+
+            if (user.Username != userUpdateDto.Username && _usersRepo.GetUserByUsername(userUpdateDto.Username) != null)
+                return BadRequest(new Dictionary<string, string>
+                    {["Status"] = "400", ["Error"] = "Username is already taken."});
+
+            _mapper.Map(userUpdateDto, user);
+            _usersRepo.UpdateUser(user);
+            _usersRepo.SaveChanges();
+
+            return Ok(_mapper.Map<UserReadDto>(user));
         }
 
         [HttpPatch("{id}")]
         public ActionResult<UserReadDto> UpdateUserPartly(int id, JsonPatchDocument<UserUpdateDto> patchDocument)
         {
-            throw new NotImplementedException(nameof(UpdateUserPartly));
+            var user = _usersRepo.GetUserById(id);
+            if (user == null) return NotFound();
+
+            var updateDto = _mapper.Map<UserUpdateDto>(user);
+            patchDocument.ApplyTo(updateDto, ModelState);
+            if (!TryValidateModel(updateDto)) return ValidationProblem(ModelState);
+
+            if (updateDto.Username != user.Username && _usersRepo.GetUserByUsername(updateDto.Username) != null)
+                return BadRequest(new Dictionary<string, string>
+                    {["Status"] = "400", ["Error"] = "Username is already taken."});
+
+            _mapper.Map(updateDto, user);
+            _usersRepo.UpdateUser(user);
+            _usersRepo.SaveChanges();
+
+            return Ok(_mapper.Map<UserReadDto>(user));
         }
     }
 }
