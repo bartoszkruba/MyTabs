@@ -7,7 +7,7 @@ namespace MyTabs.API.Data
     {
         public virtual DbSet<User> Users { get; set; }
 
-        public MyTabsContext()
+        public MyTabsContext(DbContextOptions<MyTabsContext> opt) : base(opt)
         {
         }
 

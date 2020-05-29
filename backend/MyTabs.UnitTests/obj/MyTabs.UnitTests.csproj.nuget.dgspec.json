@@ -63,6 +63,10 @@
             "Moq": {
               "target": "Package",
               "version": "[4.14.1, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[5.4.1, )"
             }
           },
           "imports": [
