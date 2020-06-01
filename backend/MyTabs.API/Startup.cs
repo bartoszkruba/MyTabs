@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -44,7 +46,26 @@ namespace MyTabs.API
 
             services.AddScoped<IUsersRepo, SqlUsersRepo>();
 
-            services.AddSwaggerGen(x => x.SwaggerDoc("v1", new OpenApiInfo()));
+            services.AddSwaggerGen(x =>
+                {
+                    x.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Version = "v1",
+                        Title = "MyTabs API",
+                        Description = "Simple .NET REST API created for learning purposes.",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Bartosz Kruba",
+                            Email = "bartosz.kruba@gmail.com"
+                        }
+                    });
+
+                    // Set comments path for the Swagger Json and UI.
+                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    x.IncludeXmlComments(xmlPath);
+                }
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

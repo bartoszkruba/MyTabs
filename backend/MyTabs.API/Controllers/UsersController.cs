@@ -22,6 +22,15 @@ namespace MyTabs.API.Controllers
             _usersRepo = usersRepo;
         }
 
+        /// <summary>Get all users.</summary>
+        /// <returns>List of existing users.</returns>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     GET /api/users
+        /// </remarks>
+        /// <response code="200">Returns list of all existing users.</response>
+        /// <response code="500">Server error.</response>
         [HttpGet]
         public ActionResult<IEnumerable<UserReadDto>> GetAllUsers()
         {
@@ -31,6 +40,17 @@ namespace MyTabs.API.Controllers
             return Ok(userDtos);
         }
 
+        /// <summary>Get user by id.</summary>
+        /// <param name="id"></param>
+        /// <returns>User with specified id.</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET /api/users/1
+        /// </remarks>
+        /// <response code="200">Returns user with specified id.</response>
+        /// <response code="404">User with specified id does not exist.</response>
+        /// <response code="500">Server error.</response>
         [HttpGet("{id}", Name = "GetUserById")]
         public ActionResult<UserReadDto> GetUserById(int id)
         {
@@ -41,7 +61,24 @@ namespace MyTabs.API.Controllers
             return Ok(userReadDto);
         }
 
+        /// <summary>Create new user.</summary>
+        /// <param name="userCreateDto"></param>
+        /// <returns>A newly created user.</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     POST /api/users
+        ///     {
+        ///         "username": "johndoe69",
+        ///         "email": "john.doe@email.com",
+        ///         "password": "password123"
+        ///     }
+        /// </remarks>
+        /// <response code="201">Returns the newly created user.</response>
+        /// <response code="400">Validation error / Username or email is already taken.</response>
+        /// <response code="500">Server error.</response> 
         [HttpPost]
+        [ProducesResponseType(typeof(UserCreateDto), 201)] // removes the default 200 response code
         public ActionResult<UserReadDto> CreateNewUser(UserCreateDto userCreateDto)
         {
             if (_usersRepo.GetUserByEmailOrUsername(userCreateDto.Email, userCreateDto.Username) != null)
@@ -60,6 +97,23 @@ namespace MyTabs.API.Controllers
             return CreatedAtRoute(nameof(GetUserById), new {user.Id}, _mapper.Map<UserReadDto>(user));
         }
 
+        /// <summary>Update a specific user.</summary>
+        /// <param name="id"></param>
+        /// <param name="userUpdateDto"></param>
+        /// <returns>Updated User.</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        /// PUT /api/users/1
+        /// {
+        ///     "username": "new_username"
+        ///     "password": "newPassword123"
+        /// }
+        /// </remarks>
+        /// <response code="200">Returns newly updated user.</response>
+        /// <response code="404">User with specified id does not exist.</response>
+        /// <response code="400">Validation error / Cannot update user because username is already taken by some other user.</response>
+        /// <response code="500">Server error.</response>
         [HttpPut("{id}")]
         public ActionResult<UserReadDto> UpdateUser(int id, UserUpdateDto userUpdateDto)
         {
@@ -77,6 +131,45 @@ namespace MyTabs.API.Controllers
             return Ok(_mapper.Map<UserReadDto>(user));
         }
 
+        /// <summary>
+        /// Patch a specific user.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="patchDocument"></param>
+        /// <returns>Patched user.</returns>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     PATCH /api/users/1
+        ///     {
+        ///       [
+        ///         {
+        ///           "op": "replace",
+        ///           "path": "/username",
+        ///           "value": "newUsername"
+        ///         },
+        ///         {
+        ///           "op": "replace",
+        ///           "path": "/password",
+        ///           "value": "newPassword"  
+        ///         },
+        ///         {
+        ///           "op": "test",
+        ///           "path": "/username",
+        ///           "value": "newUsername"
+        ///         },
+        ///         {
+        ///           "op": "test",
+        ///           "path": "/password",
+        ///           "value": "newPassword"
+        ///         }
+        ///       ]
+        ///     } 
+        /// </remarks>
+        /// <response code="200">Returns newly patched user.</response>
+        /// <response code="401">User with specified id does not exist.</response>
+        /// <response code="400">Validation error / Cannot update user because username is already taken by some other user.</response>
+        /// <response code="500">Server error.</response>
         [HttpPatch("{id}")]
         public ActionResult<UserReadDto> UpdateUserPartly(int id, JsonPatchDocument<UserUpdateDto> patchDocument)
         {
