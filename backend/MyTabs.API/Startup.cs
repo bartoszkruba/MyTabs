@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,8 +34,18 @@ namespace MyTabs.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MyTabsContext>(opt =>
-                opt.UseSqlServer(Configuration.GetConnectionString("MyTabsConnection")));
+            var envVariables = new ConfigurationBuilder()
+                .AddEnvironmentVariables()
+                .Build()
+                .AsEnumerable()
+                .ToList();
+
+            var databaseName = envVariables.Find(x => x.Key == "DatabaseName").Value;
+            var databasePassword = envVariables.Find(x => x.Key == "DatabasePassword").Value;
+            var connectionString = string.Format(Configuration.GetConnectionString("MyTabsConnection"), databaseName,
+                databasePassword);
+
+            services.AddDbContext<MyTabsContext>(opt => opt.UseSqlServer(connectionString));
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
