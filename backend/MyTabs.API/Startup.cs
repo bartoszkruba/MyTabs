@@ -1,20 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient.Server;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyTabs.API.Data;
 using MyTabs.API.Options;
@@ -40,11 +34,13 @@ namespace MyTabs.API
                 .AsEnumerable()
                 .ToList();
 
+            var databaseServer = envVariables.Find(x => x.Key == "DatabaseServer").Value;
             var databaseName = envVariables.Find(x => x.Key == "DatabaseName").Value;
+            var databaseId = envVariables.Find(x => x.Key == "DatabaseID").Value;
             var databasePassword = envVariables.Find(x => x.Key == "DatabasePassword").Value;
-            var connectionString = string.Format(Configuration.GetConnectionString("MyTabsConnection"), databaseName,
-                databasePassword);
-
+            var connectionString = string.Format(Configuration.GetConnectionString("MyTabsConnection"),
+                databaseServer, databaseName, databaseId, databasePassword);
+            
             services.AddDbContext<MyTabsContext>(opt => opt.UseSqlServer(connectionString));
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
