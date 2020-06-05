@@ -1,9 +1,11 @@
 language: csharp
 mono: none
 dist: xenial
+notifications:
+    email: false
 dotnet: 3.1
 install:
     - dotnet restore
 script:
-    - dotnet build
+    - dotnet build backend
     - dotnet test backend/MyTabs.UnitTests/MyTabs.UnitTests.csproj
