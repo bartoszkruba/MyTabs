@@ -5,7 +5,7 @@ notifications:
     email: false
 dotnet: 3.1
 install:
-    - dotnet restore
+    - dotnet restore backend
 script:
     - dotnet build backend
     - dotnet test backend/MyTabs.UnitTests/MyTabs.UnitTests.csproj
