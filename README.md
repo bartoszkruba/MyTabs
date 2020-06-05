@@ -1,4 +1,5 @@
-# MyTabs
+# MyTabs  
+[![Build Status](https://travis-ci.org/bartoszkruba/MyTabs.svg?branch=master)](https://travis-ci.org/bartoszkruba/MyTabs)  
 Web-app developed with Vue.js &amp; .NET Core
 
 ## Documentation  
