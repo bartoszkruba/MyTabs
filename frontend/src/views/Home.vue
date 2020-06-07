@@ -1,18 +1,19 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+    <div class="home">
+        <h1 class="text-center">Home</h1>
+        <h2 class="text-center">{{msg}}</h2>
+    </div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+<script lang="ts">
+    import Vue from "vue";
+    import Component from "vue-class-component"
+    import {Prop} from 'vue-property-decorator'
 
-export default {
-  name: 'Home',
-  components: {
-    HelloWorld
-  }
-}
+    @Component({components: {}, name: "Home"})
+    export default class Home extends Vue {
+
+        @Prop({default: "No Message"})
+        private msg!: string
+    }
 </script>
