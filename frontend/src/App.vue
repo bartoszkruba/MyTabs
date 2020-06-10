@@ -100,10 +100,18 @@
 <script lang="ts">
     import Vue from 'vue';
     import Component from 'vue-class-component'
+    import {getUserFromCookies} from '@/util/user';
 
     @Component({components: {}, name: "App"})
     export default class App extends Vue {
-        private loggedIn = false;
+
+        get loggedIn(): boolean {
+            return this.$store.state.user != null
+        }
+
+        beforeCreate() {
+            this.$store.commit("setUser", getUserFromCookies())
+        }
     }
 
 </script>
