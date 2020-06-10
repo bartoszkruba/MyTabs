@@ -16,7 +16,7 @@
 
             <v-spacer></v-spacer>
 
-            <router-link to="/search">
+            <router-link to="/">
                 <v-btn text>
                     <span class="mr-2">Search</span>
                     <v-icon>mdi-magnify</v-icon>
@@ -57,7 +57,7 @@
             <router-view/>
         </v-content>
         <v-bottom-navigation class="bottomNav">
-            <router-link to="/search" class="bottomNavigationLink">
+            <router-link to="/" class="bottomNavigationLink">
                 <v-btn value="Search">
                     <span>Search</span>
                     <v-icon>mdi-magnify</v-icon>
@@ -103,7 +103,7 @@
 
     @Component({components: {}, name: "App"})
     export default class App extends Vue {
-        private loggedIn = true;
+        private loggedIn = false;
     }
 
 </script>
