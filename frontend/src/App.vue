@@ -100,7 +100,7 @@
 <script lang="ts">
     import Vue from 'vue';
     import Component from 'vue-class-component'
-    import {getUserFromCookies} from '@/util/user';
+    import {getUserFromCookies} from '@/util/cookies';
 
     @Component({components: {}, name: "App"})
     export default class App extends Vue {
