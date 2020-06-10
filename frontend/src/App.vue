@@ -109,8 +109,12 @@
 </script>
 
 <style scoped>
+    .darkText {
+        color: #555;
+    }
+
     .websiteContent {
-        margin-top: 50px;
+        margin-top: 25px !important;
     }
 
     .bottomNavigationLink {
@@ -123,6 +127,10 @@
     }
 
     @media (max-width: 760px) {
+        .websiteContent {
+            margin-top: -45px !important;
+        }
+
         .appName {
             display: none;
         }

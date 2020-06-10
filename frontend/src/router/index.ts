@@ -7,6 +7,7 @@ import Notifications from "@/views/Notifications.vue"
 import Profile from '@/views/Profile.vue'
 import Register from '@/views/Register.vue'
 import Login from '@/views/Login.vue'
+import PageNotFound from '@/views/PageNotFound.vue'
 
 Vue.use(VueRouter)
 
@@ -46,6 +47,12 @@ const routes: Array<RouteConfig> = [
         name: "Login",
         component: Login,
         meta: {title: `${APP_NAME} | Login`}
+    },
+    {
+        path: "*",
+        name: "Page Not Found",
+        component: PageNotFound,
+        meta: {title: `${APP_NAME} | Page Not Found`}
     }
 ]
 

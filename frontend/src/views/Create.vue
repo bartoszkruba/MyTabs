@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container class="darkText">
         <v-row>
             <v-col><h1 class="text-center">Create</h1></v-col>
         </v-row>
