@@ -137,6 +137,7 @@
     @media (max-width: 760px) {
         .websiteContent {
             margin-top: -45px !important;
+            margin-bottom: 40px !important;
         }
 
         .appName {
@@ -148,6 +149,7 @@
         }
 
         .bottomNav {
+            position:fixed;
             display: flex !important;
         }
 
