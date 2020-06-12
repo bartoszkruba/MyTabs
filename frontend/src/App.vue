@@ -98,8 +98,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import Component from 'vue-class-component'
+    import {Vue, Component} from 'vue-property-decorator'
     import {getUserFromCookies} from '@/util/cookies';
 
     @Component({components: {}, name: "App"})
@@ -137,6 +136,7 @@
     @media (max-width: 760px) {
         .websiteContent {
             margin-top: -45px !important;
+            margin-bottom: 40px !important;
         }
 
         .appName {
@@ -148,6 +148,7 @@
         }
 
         .bottomNav {
+            position:fixed;
             display: flex !important;
         }
 

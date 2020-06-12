@@ -40,7 +40,13 @@ namespace MyTabs.API
             var databasePassword = envVariables.Find(x => x.Key == "DatabasePassword").Value;
             var connectionString = string.Format(Configuration.GetConnectionString("MyTabsConnection"),
                 databaseServer, databaseName, databaseId, databasePassword);
-            
+
+            services.AddCors(c => c.AddPolicy("AllowOrigin", options =>
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyMethod();
+                options.AllowAnyHeader();
+            }));
             services.AddDbContext<MyTabsContext>(opt => opt.UseSqlServer(connectionString));
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -83,6 +89,7 @@ namespace MyTabs.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("AllowOrigin");
             var swaggerOptions = new SwaggerOptions();
 
             Configuration.GetSection(nameof(SwaggerOptions)).Bind(swaggerOptions);
