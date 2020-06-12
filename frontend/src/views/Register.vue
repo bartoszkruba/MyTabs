@@ -80,10 +80,11 @@
             try {
                 this.loading = true;
                 await createNewUser(this.username, this.email, this.password);
+                this.loading = false;
                 await this.$router.push("login");
             } catch (e) {
-                if (e.response && e.response.status >= 400 && e.response.status < 500 && e.response.data &&
-                    e.response.data.error) {
+                if (e.response && e.response.status && e.response.status >= 400 && e.response.status < 500 &&
+                    e.response.data && e.response.data.error) {
                     this.error = e.response.data.error;
                 } else this.error = "Oops, something went wrong. Try again.";
                 this.loading = false;

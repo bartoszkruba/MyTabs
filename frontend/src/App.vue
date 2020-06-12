@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <v-app class="application">
         <v-app-bar app color="primary" dark class="navbar">
             <div class="d-flex align-center">
                 <router-link to="/">
@@ -117,7 +117,7 @@
 
 <style scoped>
     .darkText {
-        color: #555;
+        color: #777;
     }
 
     .websiteContent {
