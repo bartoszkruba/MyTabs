@@ -1,6 +1,6 @@
 <template>
-    <v-form class="darkText mt-5 registerForm" ref="form">
-        <LoadingPopup/>
+    <v-form class="darkText mt-5 registerForm" ref="form" v-model="valid">
+        <LoadingPopup v-if="loading"/>
         <v-container class="elevation-4" style="max-width: 500px">
             <v-row>
                 <v-col><h1 class="text-center">Register New Account.</h1></v-col>
@@ -39,58 +39,54 @@
 </template>
 
 <script lang="ts">
-    import Vue from 'vue';
-    import Component from 'vue-class-component'
+    import {Vue, Component} from 'vue-property-decorator'
     import LoadingPopup from '@/components/LoadingPopup.vue';
-    import {Prop, Watch} from 'vue-property-decorator'
     import {createNewUser} from "@/util/api";
 
     @Component({components: {LoadingPopup}, name: "Register"})
     export default class Register extends Vue {
-        @Prop()
-        private username = 'john69'
+        private valid = false
+        private username = ''
+        private email = ''
+        private password = ''
+        private repeatPassword = ''
+        private error = ''
+        private loading = false
 
         private usernameRules = [
             v => !!v || "Field is required",
             v => (!!v && v.length >= 4 && v.length <= 20) || 'Username must be between 4 and 20 characters longs',
             v => (!!v && !v.includes(" ")) || "No spaces allowed"
         ]
-        @Prop()
-        public email = 'john.doe@email.com'
         private emailRules = [
             v => !!v || "Field is required",
             v => /.+@.+\..+/.test(v) || "Invalid email",
         ]
-        @Prop()
-        public password = 'password1234'
         private passwordRules = [
             v => !!v || "Field is required",
             v => (!!v && !v.includes(" ")) || "No spaces allowed"
         ]
-        @Prop()
-        public repeatPassword = 'password1234'
         private repeatPasswordRules = [
             v => !!v || "Field is required",
             v => (!!v && !v.includes(" ")) || "No spaces allowed",
-            v => (v == this.password) || "Passwords do not matches"
+            () => this.passwordsMatches() || "Passwords do not matches"
         ]
 
-        @Prop()
-        private error = "";
-
-        get valid() {
-            for (const rule of this.usernameRules) if (rule(this.username) != true) return false;
-            for (const rule of this.emailRules) if (rule(this.email) != true) return false;
-            for (const rule of this.passwordRules) if (rule(this.password) != true) return false;
-            for (const rule of this.repeatPasswordRules) if (rule(this.repeatPassword) != true) return false;
-            return true;
+        private passwordsMatches() {
+            return this.password == this.repeatPassword
         }
 
-        private register = async () => {
+        private async register() {
             try {
-                const response = await createNewUser(this.username, this.email, this.password);
+                this.loading = true;
+                await createNewUser(this.username, this.email, this.password);
+                await this.$router.push("login");
             } catch (e) {
-                this.error = "Could not register account.";
+                if (e.response && e.response.status >= 400 && e.response.status < 500 && e.response.data &&
+                    e.response.data.error) {
+                    this.error = e.response.data.error;
+                } else this.error = "Oops, something went wrong. Try again.";
+                this.loading = false;
             }
         }
     }

@@ -5,7 +5,7 @@ import User from "@/models/User"
 const client = axios.create({baseURL: API_URL})
 
 export const createNewUser = (username: string, email: string, password: string) => {
-    return axios.post("user", {username, email, password})
+    return client.post("users", {username, email, password})
 }
 
 export const getUserById = async (id: number) => {
